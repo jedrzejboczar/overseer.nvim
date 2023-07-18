@@ -101,6 +101,21 @@ M.decode_json = function(content)
   return data
 end
 
+---@return boolean
+M.has_yaml_decoder = function()
+  return vim.F.npcall(require, "lyaml") ~= nil
+end
+
+---Decodes a yaml string if lyaml is available
+---@param content string
+---@return any?
+M.decode_yaml = function(content)
+  local lyaml = vim.F.npcall(require, "lyaml")
+  if lyaml then
+    return lyaml.load(content)
+  end
+end
+
 ---@param winid number
 M.go_win_no_au = function(winid)
   if winid == nil or winid == vim.api.nvim_get_current_win() then

@@ -54,6 +54,11 @@ M.abspath = function(path)
   return path
 end
 
+M.get_extension = function(path)
+  local parts = vim.split(path, '.', { plain = true })
+  return parts[#parts]
+end
+
 --- Returns true if candidate is a subpath of root, or if they are the same path.
 ---@param root string
 ---@param candidate string
@@ -125,12 +130,25 @@ M.gen_random_filename = function(data_dir, basename)
 end
 
 ---@param filepath string
+---@param decoder fun(string): any
 ---@return any?
-M.load_json_file = function(filepath)
+local function load_file(filepath, decoder)
   local content = M.read_file(filepath)
   if content then
-    return util.decode_json(content)
+    return decoder(content)
   end
+end
+
+---@param filepath string
+---@return any?
+M.load_json_file = function(filepath)
+  return load_file(filepath, util.decode_json)
+end
+
+---@param filepath string
+---@return any?
+M.load_yaml_file = function(filepath)
+  return load_file(filepath, util.decode_yaml)
 end
 
 ---@param dir string
